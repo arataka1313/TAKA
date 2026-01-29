@@ -1,26 +1,25 @@
 @import "tailwindcss";
 
+/* クールなダークモード用の変数定義 */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #030712; /* zinc-950: 非常に深い紺黒 */
+  --foreground: #f8fafc; /* slate-50: ほぼ白に近いグレー */
+  
+  /* アクセントカラーをCSS変数として定義 */
+  --accent-cyan: #22d3ee;
+  --accent-blue: #3b82f6;
+  --accent-purple: #a855f7;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  /* v4ではここでカスタムカラーを追加できます */
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-purple: var(--accent-purple);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif; /* モダンなフォントを指定（標準で入っていることが多いです） */
 }
