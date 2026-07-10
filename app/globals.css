@@ -1,25 +1,163 @@
 @import "tailwindcss";
 
-/* クールなダークモード用の変数定義 */
-:root {
-  --background: #030712; /* zinc-950: 非常に深い紺黒 */
-  --foreground: #f8fafc; /* slate-50: ほぼ白に近いグレー */
-  
-  /* アクセントカラーをCSS変数として定義 */
-  --accent-cyan: #22d3ee;
-  --accent-blue: #3b82f6;
-  --accent-purple: #a855f7;
-}
+/* ============================================================
+   TAKA — Exploration Log
+   Palette: descending ocean. Surface blue → abyss black.
+   One luminous accent (bioluminescent teal) + warm sand for awards.
+   ============================================================ */
 
 @theme {
-  /* v4ではここでカスタムカラーを追加できます */
-  --color-accent-cyan: var(--accent-cyan);
-  --color-accent-blue: var(--accent-blue);
-  --color-accent-purple: var(--accent-purple);
+  --color-abyss: #01060c;
+  --color-deep: #04121d;
+  --color-mid: #071c2b;
+  --color-shallow: #0c2c40;
+  --color-foam: #eef6f9; /* primary text */
+  --color-mist: #a9c3cf; /* secondary text */
+  --color-faint: #7c97a6; /* meta / mono text */
+  --color-glow: #6ee7d8; /* bioluminescent accent */
+  --color-sand: #e8c98f; /* warm accent, used sparingly */
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', sans-serif; /* モダンなフォントを指定（標準で入っていることが多いです） */
+  color: var(--color-foam);
+  background-color: var(--color-abyss);
+  /* The dive: page background darkens as you scroll down. */
+  background-image: linear-gradient(
+    180deg,
+    #0e3449 0%,
+    #0a2939 10%,
+    #071c2b 28%,
+    #04121d 52%,
+    #020b13 76%,
+    #01060c 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(110, 231, 216, 0.35);
+  color: #eef6f9;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-glow);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Skip link — visually hidden until keyboard focus */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--color-deep);
+  border: 1px solid var(--color-glow);
+  color: var(--color-foam);
+  font-size: 0.8rem;
+  transition: top 0.15s ease;
+}
+.skip-link:focus-visible {
+  top: 1rem;
+}
+
+/* ---- Scroll reveal (IntersectionObserver adds .is-visible) ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Hero entrance ---- */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fade-up {
+  animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ---- Instrument animations ---- */
+@keyframes sonar-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.sonar-sweep {
+  animation: sonar-sweep 7s linear infinite;
+  transform-origin: 100px 100px;
+  transform-box: view-box;
+}
+
+@keyframes ping-dot {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.ping-dot {
+  animation: ping-dot 3.2s ease-in-out infinite;
+}
+
+@keyframes drift-down {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(10px);
+    opacity: 0.4;
+  }
+}
+.drift-down {
+  animation: drift-down 2.6s ease-in-out infinite;
+}
+
+/* Blueprint grid backdrop for the ROV schematic */
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(169, 195, 207, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(169, 195, 207, 0.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* ---- Reduced motion: everything settles instantly ---- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

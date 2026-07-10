@@ -1,22 +1,36 @@
-import Hero from "@/components/sections/Hero";
-import Projects from "@/components/sections/Projects";
-import TechStack from "@/components/sections/TechStack";
-import Timeline from "@/components/sections/Timeline";
+import DepthGauge from "@/components/dive/DepthGauge";
 import Footer from "@/components/layout/Footer";
-import MouseFollower from "@/components/ui/MouseFollower";
-import LanguageSwitch from "@/components/ui/LanguageSwitch"; // ← 追加
+import Header from "@/components/layout/Header";
+import Currents from "@/components/sections/Currents";
+import Equipment from "@/components/sections/Equipment";
+import Field from "@/components/sections/Field";
+import Hero from "@/components/sections/Hero";
+import Journey from "@/components/sections/Journey";
+import Records from "@/components/sections/Records";
+import Research from "@/components/sections/Research";
+import Vision from "@/components/sections/Vision";
 
+// The page is a single descent: surface → sunlit → shallows →
+// twilight → midnight → abyss → open ocean → seabed.
 export default function Home() {
   return (
-    <main className="min-h-screen bg-zinc-950 text-white selection:bg-accent-cyan/30 overflow-x-hidden relative">
-      <MouseFollower />
-      <LanguageSwitch /> {/* ← ここに置く！ */}
-      
-      <Hero />
-      <Projects />
-      <TechStack />
-      <Timeline />
-      <Footer />
-    </main>
+    <>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+      <Header />
+      <DepthGauge />
+      <main id="main" className="relative mx-auto max-w-7xl">
+        <Hero />
+        <Vision />
+        <Field />
+        <Research />
+        <Records />
+        <Equipment />
+        <Journey />
+        <Currents />
+        <Footer />
+      </main>
+    </>
   );
 }
