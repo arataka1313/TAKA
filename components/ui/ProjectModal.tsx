@@ -1,79 +1,126 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
 
-type Project = {
-  title: string;
-  subtitle: string;
-  description: string;
-  details?: string;
-  tag: string;
-  icon: React.ReactNode;
-};
+import { useEffect } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
+import type { Project } from "@/types";
 
 interface ProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   project: Project | null;
+  closeLabel: string;
 }
 
-export default function ProjectModal({ isOpen, onClose, project }: ProjectModalProps) {
+export default function ProjectModal({
+  isOpen,
+  onClose,
+  project,
+  closeLabel,
+}: ProjectModalProps) {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  const imageClass =
+    project?.imageFit === "contain"
+      ? "object-contain p-5 md:p-8"
+      : "object-cover";
+
   return (
     <AnimatePresence>
       {isOpen && project && (
         <>
-          {/* 1. 背景の黒いフィルター */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+            className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm"
           />
 
-          {/* 2. モーダル本体 */}
-          <div className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-none">
+          <div className="pointer-events-none fixed inset-0 z-[101] flex items-center justify-center p-4">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={`project-title-${project.id}`}
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-zinc-900 border border-white/10 w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-3xl shadow-2xl pointer-events-auto"
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              className="pointer-events-auto max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 bg-zinc-900 shadow-2xl"
             >
-              {/* ヘッダー画像エリア（将来的に画像入れたいならここ） */}
-              <div className="h-32 bg-gradient-to-r from-accent-cyan/20 to-accent-purple/20 relative flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-grid-white/[0.05]" />
-                <div className="text-accent-cyan opacity-20 transform scale-150">
-                   {project.icon}
-                </div>
-                <button 
+              <div className="relative h-52 overflow-hidden bg-gradient-to-r from-zinc-950 to-zinc-900 md:h-72">
+                <Image
+                  src={project.image}
+                  alt={project.imageAlt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 768px"
+                  className={imageClass}
+                />
+                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-zinc-900 to-transparent" />
+                <button
+                  type="button"
                   onClick={onClose}
-                  className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 rounded-full text-white transition-colors"
+                  aria-label={closeLabel}
+                  className="absolute top-4 right-4 rounded-full border border-white/10 bg-black/60 p-2 text-white backdrop-blur-md transition-colors hover:bg-black/80"
                 >
                   <X size={20} />
                 </button>
               </div>
 
-              {/* コンテンツエリア */}
-              <div className="p-8">
-                <span className="text-accent-cyan text-xs font-mono tracking-widest uppercase mb-2 block">
+              <div className="p-7 md:p-9">
+                <span className="mb-2 block font-mono text-xs tracking-widest text-accent-cyan uppercase">
                   {project.tag}
                 </span>
-                <h2 className="text-3xl font-bold text-white mb-1">{project.title}</h2>
-                <p className="text-slate-400 font-medium mb-6">{project.subtitle}</p>
-                
-                <div className="prose prose-invert max-w-none">
-                  <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">
-                    {project.details || project.description}
-                  </p>
-                </div>
+                <h2
+                  id={`project-title-${project.id}`}
+                  className="mb-1 text-3xl font-bold text-white md:text-4xl"
+                >
+                  {project.title}
+                </h2>
+                <p className="mb-6 font-medium text-slate-400">
+                  {project.subtitle}
+                </p>
 
-                <div className="mt-8 pt-8 border-t border-white/5 flex justify-end">
-                   <button 
-                     onClick={onClose}
-                     className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors"
-                   >
-                     Close
-                   </button>
+                {project.highlights && project.highlights.length > 0 && (
+                  <div className="mb-7 flex flex-wrap gap-2">
+                    {project.highlights.map((highlight) => (
+                      <span
+                        key={highlight}
+                        className="rounded-full border border-accent-cyan/20 bg-accent-cyan/5 px-3 py-1.5 font-mono text-[10px] tracking-wide text-accent-cyan"
+                      >
+                        {highlight}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <p className="leading-8 whitespace-pre-wrap text-slate-300">
+                  {project.details}
+                </p>
+
+                <div className="mt-8 flex justify-end border-t border-white/5 pt-8">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="rounded-full bg-white/10 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20"
+                  >
+                    {closeLabel}
+                  </button>
                 </div>
               </div>
             </motion.div>

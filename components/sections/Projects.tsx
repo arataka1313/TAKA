@@ -1,45 +1,39 @@
 "use client";
-import { useState } from "react"; // ← 追加
+
+import { useState } from "react";
 import SectionTitle from "@/components/ui/SectionTitle";
 import ProjectCard from "@/components/ui/ProjectCard";
-import ProjectModal from "@/components/ui/ProjectModal"; // ← 追加
-import { projects } from "@/lib/data";
+import ProjectModal from "@/components/ui/ProjectModal";
+import { projects, siteCopy } from "@/lib/data";
 import { useLanguage } from "@/context/LanguageContext";
+import type { Project } from "@/types";
 
 export default function Projects() {
   const { lang } = useLanguage();
-  
-  // モーダルの状態管理
-  const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = (project: any) => {
-    setSelectedProject(project);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => setSelectedProject(null), 300); // アニメーション終了後に消す
-  };
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   return (
-    <section className="py-32 w-full max-w-6xl mx-auto px-6">
-      <SectionTitle title="Selected Projects" />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
-        {projects[lang].map((p, i) => (
-          // divでラップしてonClickを追加
-          <div key={i} onClick={() => handleOpenModal(p)} className="cursor-pointer">
-            <ProjectCard {...p} />
-          </div>
+    <section className="mx-auto w-full max-w-6xl px-6 py-28">
+      <SectionTitle title={siteCopy[lang].sections.projects} />
+      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+        {projects[lang].map((project) => (
+          <button
+            key={project.id}
+            type="button"
+            onClick={() => setSelectedProject(project)}
+            className="cursor-pointer text-left"
+            aria-label={`${project.title} details`}
+          >
+            <ProjectCard {...project} />
+          </button>
         ))}
       </div>
 
-      {/* モーダルコンポーネントを配置 */}
-      <ProjectModal 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
-        project={selectedProject} 
+      <ProjectModal
+        isOpen={selectedProject !== null}
+        onClose={() => setSelectedProject(null)}
+        project={selectedProject}
+        closeLabel={siteCopy[lang].modal.close}
       />
     </section>
   );
